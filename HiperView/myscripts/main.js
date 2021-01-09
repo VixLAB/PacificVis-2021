@@ -844,7 +844,6 @@ function changeView(v){
 }
 
 function main() {
-
     inithostResults ();
 
     drawHorizontalView();

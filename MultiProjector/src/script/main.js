@@ -328,7 +328,7 @@ var TsneTSopt = {width:width,height:height};
 var PCAopt = {width:width,height:height};
 var umapopt = {width:width,height:height};
 var scatterplotopt = {width:width,height:height};
-var vizMode = 0; // 0 timeradar, 1 tsne, 2 pca, 3 umap
+var vizMode = 2; // 0 timeradar, 1 tsne, 2 pca, 3 umap
 var runopt ={ // run opt global
     suddenGroup:0,
     minMax: 0,
@@ -467,7 +467,7 @@ function main() {
     jobMap.hosts(hosts).color(colorTemperature).schema(serviceFullList);
     // disabled graph option
     let control_jobdisplay = d3.select('#compDisplay_control');
-        control_jobdisplay.node().options.selectedIndex = 2;
+        control_jobdisplay.node().options.selectedIndex = 10;
         control_jobdisplay.attr('disabled', '').dispatch('change');
 
     initDataWorker();

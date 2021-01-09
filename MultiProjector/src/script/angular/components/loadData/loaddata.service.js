@@ -99,6 +99,7 @@ angular.module('hpccApp')
                 readFilecsv(choice.url,choice.separate,choice)
 
         function loadata1(data,job){
+                debugger
             makedataworker();
             data['timespan'] = data.timespan.map(d=>new Date(d3.timeFormat('%a %b %d %X CDT %Y')(new Date(+d?+d:d.replace('Z','')))));
             sampleS = data;
