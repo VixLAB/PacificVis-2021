@@ -1,5 +1,4 @@
 'use strict';
-
 angular.module('hpccApp')
 .factory('Loaddata', function($timeout,Dataset,_, Config) {
 
@@ -11,6 +10,15 @@ angular.module('hpccApp')
     Loaddata.reset = function(hard) {
         Loaddata.data = Dataset.currentDataset;
     };
+    function handleJobData(job){
+        let userDict = {};
+        job.forEach(j=>{
+            if (!userDict[j.user])
+                userDict[j.user] = 'user'+d3.keys(userDict).length;
+            j.user = userDict[j.user];
+        })
+        return job;
+    }
     $('#clusterInfo_input_file').on('input',(evt)=>{
         let f = evt.target.files[0];
         var reader = new FileReader();
@@ -117,9 +125,9 @@ angular.module('hpccApp')
             inithostResults();
             // make normalize data
             initTsnedata();
-            if(job)
-                sampleJobdata = job;
-            else
+            if(job){
+                sampleJobdata = handleJobData(job);
+            }else
                 sampleJobdata = [{
                     jobID: "1",
                     name: "1",
@@ -171,7 +179,7 @@ angular.module('hpccApp')
     function loadPresetCluster(name,calback) {
         const fileName = name.includes('data:')?name:`${name}_cluster.csv`;
         return d3.csv(fileName, function (cluster) {
-            if (cluster==null||checkVliadClusterinfo(cluster)) {
+            if (cluster==null||checkValidClusterinfo(cluster)) {
                 if (cluster==null)
                     M.toast({html: 'Do not have preset major group information. Recalculate major groups'});
                 else
@@ -210,7 +218,7 @@ angular.module('hpccApp')
                 }
             }
         });
-        function checkVliadClusterinfo(cluster_input){
+        function checkValidClusterinfo(cluster_input){
             // check the axis
             cluster_input[0]
             let invalid = false;
@@ -250,18 +258,19 @@ angular.module('hpccApp')
 
             MetricController.axisSchema(serviceFullList, true).update();
             firstTime = false;
-            realTimesetting(false, "csv", true, sampleS);
-            updateDatainformation(sampleS['timespan']);
-
+            //job data
             sampleJobdata = [{
                 jobID: "1",
                 name: "1",
-                nodes: hosts.map(h => h.name),
-                startTime: new Date(_.last(sampleS.timespan) - 100).toString(),
-                submitTime: new Date(_.last(sampleS.timespan) - 100).toString(),
+                nodes: hosts.map(h=>h.name),
+                startTime: new Date(_.last(sampleS.timespan)-100).toString(),
+                submitTime: new Date(_.last(sampleS.timespan)-100).toString(),
                 user: "dummyJob"
             }];
 
+
+            realTimesetting(false, "csv", true, sampleS);
+            updateDatainformation(sampleS['timespan']);
 
             updateClusterControlUI();
             // preloader(true, 0, "File loaded: " + Math.round(evt.loaded/evt.total*100)+'%');
@@ -311,6 +320,7 @@ angular.module('hpccApp')
             }
         }, 0);
     }
+
     Loaddata.reset();
     Dataset.onUpdateFinish.push(function() {
         Loaddata.reset(true);
